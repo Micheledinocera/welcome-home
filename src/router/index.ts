@@ -1,21 +1,48 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "../views/Home/Home.vue";
+import NotFound from "../components/NotFound/NotFound.vue";
+import About from "../views/Home/About/About.vue";
+import Auth from "../views/Auth/Auth.vue";
+import Login from "../views/Auth/Login/Login.vue";
+import Signin from "../views/Auth/Signin/Signin.vue";
+import { RouterNames } from "./RouterNames";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: RouterNames.AUTH,
+    component: Auth,
+    children: [
+      {
+        path: "/",
+        name: RouterNames.LOGIN,
+        component: Login,
+      },
+      {
+        path: RouterNames.SIGNIN,
+        name: RouterNames.SIGNIN,
+        component: Signin,
+      },
+    ],
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+    path: "/" + RouterNames.HOME,
+    name: RouterNames.HOME,
+    component: Home,
+    children: [
+      {
+        path: RouterNames.ABOUT,
+        name: RouterNames.ABOUT,
+        component: About,
+      },
+    ],
   },
+  {
+    path: "/" + RouterNames.NOTFOUND,
+    name: RouterNames.NOTFOUND,
+    component: NotFound,
+  },
+  { path: "/:pathMatch(.*)*", redirect: { name: RouterNames.NOTFOUND } },
 ];
 
 const router = createRouter({

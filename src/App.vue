@@ -15,10 +15,8 @@ export default {
   setup() {
     const store = useStore();
 
-    const bindAppInfo = () => store.dispatch("bindAppInfo");
-
     onMounted(() => {
-      bindAppInfo();
+      store.dispatch("bindAppInfo");
     });
 
     return {};

@@ -1,20 +1,21 @@
+import { Casa } from "@/model/Casa";
 import { createStore } from "vuex";
 import firebaseStore from "./firebaseStore";
 
 export default createStore({
   state: {
-    refreshAppInfo: true as boolean,
+    selectedCasa: new Casa() as Casa,
   },
   getters: {
-    getRefreshAppInfo: (state): boolean => state.refreshAppInfo,
+    getSelectedCasa: (state: any): Casa => state.selectedCasa,
   },
   mutations: {
-    setRefreshAppInfo: (state, refreshAppInfo: boolean) =>
-      (state.refreshAppInfo = refreshAppInfo),
+    setSelectedCasa: (state: any, selectedCasa: Casa) =>
+      (state.selectedCasa = selectedCasa),
   },
   actions: {
-    setRefreshAppInfo: (context, refreshAppInfo: boolean) =>
-      context.commit("setRefreshAppInfo", refreshAppInfo),
+    setSelectedCasa: (context, selectedCasa: Casa) =>
+      context.commit("setSelectedCasa", selectedCasa),
   },
   modules: { firebaseStore },
 });

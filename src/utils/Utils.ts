@@ -1,3 +1,6 @@
+import { User } from "@/model/User";
+import { getAuth } from "firebase/auth";
+
 export default class Utils {
   static APP_VERSION = "WELCOME_HOME_VERSION";
 
@@ -21,5 +24,15 @@ export default class Utils {
       event.preventDefault();
       // event.stopPropagation(); // maybe useless
     }
+  }
+
+  static getCurrentUser() {
+    return new Promise((resolve, reject) => {
+      const auth = getAuth();
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        unsubscribe();
+        resolve(user);
+      }, reject);
+    });
   }
 }

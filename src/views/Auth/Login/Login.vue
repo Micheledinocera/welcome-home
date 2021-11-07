@@ -1,6 +1,5 @@
 <template>
-  <div class="login">
-    <h1>Login</h1>
+  <div class="login" v-loading="loading">
     <el-input
       class="email"
       type="email"
@@ -20,21 +19,27 @@
 
 <script lang="ts">
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { ref } from "vue";
 import { ElNotification } from "element-plus";
+import { RouterNames } from "@/router/RouterNames";
 
 export default {
   setup() {
     const store = useStore();
+    const router = useRouter();
     let email = ref("");
     let password = ref("");
+    let loading = ref(false);
 
     const loginAction = async () => {
       const auth = getAuth();
+      loading.value = true;
       signInWithEmailAndPassword(auth, email.value, password.value)
         .then(async (userCredential) => {
-          await store.dispatch("setUser", userCredential.user.uid);
+          await store.dispatch("bindUser", userCredential.user.uid);
+          router.push({ name: RouterNames.USER_PAGE });
         })
         .catch((error) => {
           ElNotification({
@@ -42,13 +47,15 @@ export default {
             message: error.message,
             type: "error",
           });
-        });
+        })
+        .finally(() => (loading.value = false));
     };
 
     return {
       loginAction,
       email,
       password,
+      loading,
     };
   },
 };

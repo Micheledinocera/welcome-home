@@ -2,10 +2,14 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Home from "../views/Home/Home.vue";
 import NotFound from "../components/NotFound/NotFound.vue";
 import About from "../views/Home/About/About.vue";
+import UserPage from "../views/Home/UserPage/UserPage.vue";
+import CasaPage from "../views/Home/CasaPage/CasaPage.vue";
 import Auth from "../views/Auth/Auth.vue";
 import Login from "../views/Auth/Login/Login.vue";
 import Signin from "../views/Auth/Signin/Signin.vue";
 import { RouterNames } from "./RouterNames";
+import Utils from "@/utils/Utils";
+import store from "@/store";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -35,6 +39,16 @@ const routes: Array<RouteRecordRaw> = [
         name: RouterNames.ABOUT,
         component: About,
       },
+      {
+        path: RouterNames.CASA_PAGE,
+        name: RouterNames.CASA_PAGE,
+        component: CasaPage,
+      },
+      {
+        path: "",
+        name: RouterNames.USER_PAGE,
+        component: UserPage,
+      },
     ],
   },
   {
@@ -48,6 +62,19 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach(async (to, from, next) => {
+  let user = store.getters.getUser;
+  if (user.email == "") {
+    user = await Utils.getCurrentUser();
+    if (user) await store.dispatch("bindUser", user.uid);
+  }
+  if (user && to.matched[0].name == RouterNames.AUTH)
+    router.push({ name: RouterNames.USER_PAGE });
+  else if (!user && to.matched[0].name !== RouterNames.AUTH)
+    router.push({ name: RouterNames.LOGIN });
+  next();
 });
 
 export default router;

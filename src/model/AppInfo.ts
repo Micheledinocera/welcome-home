@@ -1,15 +1,15 @@
 export interface IAppInfo {
-  Nome: string;
+  nome: string;
   version: string;
 }
 
 export class AppInfo {
   static tableName = "AppInfo" as string;
-  public Nome: string;
+  public nome: string;
   public version: string;
 
   constructor(data?: IAppInfo) {
-    this.Nome = data ? data.Nome : "";
+    this.nome = data ? data.nome : "";
     this.version = data ? data.version : "0.0";
   }
 }

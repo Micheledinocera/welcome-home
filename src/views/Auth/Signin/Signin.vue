@@ -1,5 +1,5 @@
 <template>
-  <div class="signin">
+  <div class="signin" v-loading="loading">
     <el-input
       class="nome"
       type="nome"
@@ -29,25 +29,33 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { ref } from "vue";
 import { ElNotification } from "element-plus";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { RouterNames } from "@/router/RouterNames";
+import { User } from "@/model/User";
 
 export default {
   setup() {
     const store = useStore();
+    const router = useRouter();
     let email = ref("");
     let password = ref("");
     let nome = ref("");
+    let loading = ref(false);
 
     const signinAction = async () => {
       const auth = getAuth();
+      loading.value = true;
       createUserWithEmailAndPassword(auth, email.value, password.value)
         .then(async (userCredential) => {
-          await store.dispatch("addUser", {
-            uid: userCredential.user.uid,
-            user: {
+          await store.dispatch(
+            "addUser",
+            new User({
+              uid: userCredential.user.uid,
               email: email.value,
-              Nome: nome.value,
-            },
-          });
+              nome: nome.value,
+            })
+          );
+          router.push({ name: RouterNames.USER_PAGE });
         })
         .catch((error) => {
           ElNotification({
@@ -55,7 +63,8 @@ export default {
             message: error.message,
             type: "error",
           });
-        });
+        })
+        .finally(() => (loading.value = false));
     };
 
     return {
@@ -63,6 +72,7 @@ export default {
       email,
       password,
       nome,
+      loading,
     };
   },
 };
